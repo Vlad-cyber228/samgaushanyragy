@@ -1,0 +1,188 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шанырак - НИШ ФМН Алматы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-50 font-sans">
+    <!-- Фиксированная шапка -->
+    <header class="fixed top-0 left-0 w-full bg-green-700 text-white py-4 shadow-lg z-50">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-3xl font-bold">Шанырак НИШ</h1>
+            <nav class="flex items-center space-x-8">
+                <ul class="flex space-x-6 text-lg">
+                    <li><a href="#home" class="hover:text-green-300">Главная</a></li>
+                    <li><a href="#about" class="hover:text-green-300">О Шаныраке</a></li>
+                    <li><a href="#events" class="hover:text-green-300">Мероприятия</a></li>
+                    <li><a href="#classes" class="hover:text-green-300">Наши классы</a></li>
+                    <li><a href="#contact" class="hover:text-green-300">Контакты</a></li>
+                </ul>
+                <a href="#contact" class="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-400">Присоединиться</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Главная секция с фигурами -->
+    <section id="home" class="bg-gradient-to-r from-green-600 to-green-400 text-white pt-32 pb-20 relative overflow-hidden">
+        <div class="container mx-auto text-center px-6 relative z-10">
+            <h2 class="text-5xl font-extrabold mb-6">Шанырак — Единство классов НИШ</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Объединение классов 7K, 8D и 10L Назарбаев Интеллектуальной школы в Алматы для совместного развития, творчества и лидерства.</p>
+            <a href="#events" class="bg-white text-green-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-100">Узнать о мероприятиях</a>
+        </div>
+        <!-- Декоративные фигуры -->
+        <svg class="absolute top-20 left-20 w-32 h-32 opacity-40" fill="none" stroke="white" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+        </svg>
+        <svg class="absolute bottom-10 right-10 w-40 h-40 opacity-40" fill="green" viewBox="0 0 24 24">
+            <polygon points="12,2 22,22 2,22" />
+        </svg>
+    </section>
+
+    <!-- Секция "О Шаныраке" -->
+    <section id="about" class="py-24 relative">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12 text-green-700">О Шаныраке и НИШ ФМН Алматы</h2>
+            <p class="text-xl text-gray-800 max-w-3xl mx-auto mb-6">Шанырак — это программа Назарбаев Интеллектуальной школы физико-математического направления (НИШ ФМН) в Алматы, объединяющая классы 7K, 8D и 10L. Вдохновленная казахской традицией, где шанырак символизирует единство, программа сплачивает учеников через интеллектуальные, творческие и спортивные мероприятия.</p>[](https://fmalm.nis.edu.kz/o-nas/o-shkole/)
+            <p class="text-xl text-gray-800 max-w-3xl mx-auto">НИШ ФМН Алматы, открытая в 2014 году, предлагает образование мирового уровня с акцентом на физику, математику и информатику. Школа реализует программу "NIS-Programme" совместно с Кембриджским университетом, включая трехъязычное обучение (казахский, русский, английский). Ученики добиваются успехов на олимпиадах, таких как Asian Physics Olympiad, и участвуют в более чем 20 клубах, включая шахматы, робототехнику и спорт.</p>[](https://schools.nis.edu.kz/school/almphm)[](https://www.nis.edu.kz/ru/schools/almaty/)
+        </div>
+        <!-- Декоративная фигура -->
+        <svg class="absolute top-10 right-20 w-28 h-28 opacity-40" fill="green" viewBox="0 0 24 24">
+            <rect x="4" y="4" width="16" height="16" />
+        </svg>
+    </section>
+
+    <!-- Секция "Мероприятия" -->
+    <section id="events" class="bg-green-100 py-24">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12 text-green-700">Мероприятия Шанырака</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h3 class="text-2xl font-semibold mb-4 text-green-500">Олимпиады</h3>
+                    <p class="text-gray-600 text-lg">Ученики Шанырака участвуют в олимпиадах по математике, физике и информатике, включая международные соревнования, такие как Еуразияская олимпиада по информатике.</p>[](https://schools.nis.edu.kz/school/almphm)
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h3 class="text-2xl font-semibold mb-4 text-green-500">Творческие конкурсы</h3>
+                    <p class="text-gray-600 text-lg">Конкурсы, такие как литературные эссе, театральные постановки и музыкальные выступления, позволяют классам проявить креативность.</p>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h3 class="text-2xl font-semibold mb-4 text-green-500">Командные проекты</h3>
+                    <p class="text-gray-600 text-lg">Экологические инициативы, научные исследования и социальные проекты объединяют классы для решения актуальных задач.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция "Наши классы" -->
+    <section id="classes" class="py-24 relative">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12 text-green-700">Наши классы</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="text-center">
+                    <h3 class="text-2xl font-semibold mb-4 text-green-500">7K</h3>
+                    <p class="text-gray-600 text-lg">Младшие участники Шанырака, активно участвующие в олимпиадах и конкурсах, таких как футбольный турнир на Кубок школы.</p>[](https://vk.com/nis_almaty)
+                </div>
+                <div class="text-center">
+                    <h3 class="text-2xl font-semibold mb-4 text-green-500">8D</h3>
+                    <p class="text-gray-600 text-lg">Класс 8D вносит творческий вклад в мероприятия Шанырака, организуя конкурсы и поддерживая командные проекты.</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-2xl font-semibold mb-4 text-green-500">10L</h3>
+                    <p class="text-gray-600 text-lg">Старшеклассники 10L берут на себя лидерские роли, координируя инициативы и наставляя младших учеников.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Декоративная фигура -->
+        <svg class="absolute bottom-10 left-20 w-32 h-32 opacity-40" fill="none" stroke="green" viewBox="0 0 24 24">
+            <polygon points="12,2 22,22 2,22" stroke-width="2"/>
+        </svg>
+    </section>
+
+    <!-- Секция "Контакты" с формой -->
+    <section id="contact" class="bg-green-50 py-24 relative">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center mb-12 text-green-700">Свяжитесь с нами</h2>
+            <div class="max-w-2xl mx-auto">
+                <p class="text-xl text-gray-700 mb-6 text-center">Хотите узнать больше о Шаныраке или присоединиться? Напишите нам!</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <p class="text-gray-600 text-lg mb-3"><strong>Email:</strong> vlad.ossipov11@gmail.com</p>
+                        <p class="text-gray-600 text-lg mb-3"><strong>Телефон:</strong> +7 771 487 6443</p>
+                        <p class="text-gray-600 text-lg"><strong>Адрес:</strong> Жамакаева 164, Алматы, Казахстан</p>
+                    </div>
+                    <form class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-lg text-gray-700">Имя</label>
+                            <input type="text" id="name" class="w-full p-3 rounded-lg border border-green-300 focus:outline-none focus:border-green-500" placeholder="Ваше имя">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-lg text-gray-700">Email</label>
+                            <input type="email" id="email" class="w-full p-3 rounded-lg border border-green-300 focus:outline-none focus:border-green-500" placeholder="Ваш email">
+                        </div>
+                        <div>
+                            <label for="message" class="block text-lg text-gray-700">Сообщение</label>
+                            <textarea id="message" class="w-full p-3 rounded-lg border border-green-300 focus:outline-none focus:border-green-500" rows="5" placeholder="Ваше сообщение"></textarea>
+                        </div>
+                        <button type="submit" class="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-500 w-full">Отправить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Декоративная фигура -->
+        <svg class="absolute top-20 right-20 w-28 h-28 opacity-40" fill="green" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+        </svg>
+    </section>
+
+    <!-- Подвал -->
+    <footer class="bg-green-700 text-white py-10">
+        <div class="container mx-auto text-center px-6">
+            <p class="text-lg">© 2025 Шанырак НИШ ФМН Алматы. Все права защищены.</p>
+            <p class="mt-4 text-lg">
+                <a href="#privacy" class="hover:text-green-300">Политика конфиденциальности</a> | 
+                <a href="#terms" class="hover:text-green-300">Условия использования</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
